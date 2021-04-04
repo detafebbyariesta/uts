@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:uts/model/entryform.dart';
-import 'package:uts/dbhelper/dbhelper.dart';
+import 'package:uts/model/entryformKopsis.dart';
+import 'package:uts/dbhelper/dbhelperKopsis.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
-import '../model/item.dart'; //pendukung program asinkron
+import '../model/itemKopsis.dart'; //pendukung program asinkron
 
-class Home extends StatefulWidget {
+class HomeKopsis extends StatefulWidget {
   @override
-  HomeState createState() => HomeState();
+  HomeKopsisState createState() => HomeKopsisState();
 }
 
-class HomeState extends State<Home> {
-  DbHelper dbHelper = DbHelper();
+class HomeKopsisState extends State<HomeKopsis> {
+  DbHelperKopsis dbHelperKopsis = DbHelperKopsis();
   int count = 0;
-  List<Item> itemList;
+  List<ItemKopsis> itemKopsisList;
   @override
   Widget build(BuildContext context) {
     updateListView();
-    if (itemList == null) {
-      itemList = List<Item>();
+    if (itemKopsisList == null) {
+      itemKopsisList = List<ItemKopsis>();
+      updateListView();
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Item'),
+        title: Center(child:
+        Text('Nama Penjual Kopsis')),
       ),
       body: Column(children: [
         Expanded(
@@ -33,12 +35,12 @@ class HomeState extends State<Home> {
           child: SizedBox(
             width: double.infinity,
             child: RaisedButton(
-              child: Text("Tambah Item"),
+              child: Text("Tambah Nama"),
               onPressed: () async {
-                var item = await navigateToEntryForm(context, null);
-                if (item != null) {
+                var itemKopsis = await navigateToEntryForm(context, null);
+                if (itemKopsis != null) {
 //TODO 2 Panggil Fungsi untuk Insert ke DB
-                  int result = await dbHelper.insert(item);
+                  int result = await dbHelperKopsis.insert(itemKopsis);
                   if (result > 0) {
                     updateListView();
                   }
@@ -51,10 +53,10 @@ class HomeState extends State<Home> {
     );
   }
 
-  Future<Item> navigateToEntryForm(BuildContext context, Item item) async {
+  Future<ItemKopsis> navigateToEntryForm(BuildContext context, ItemKopsis itemkopsis) async {
     var result = await Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return EntryForm(item);
+      return EntryForm(itemkopsis);
     }));
     return result;
   }
@@ -73,25 +75,25 @@ class HomeState extends State<Home> {
               child: Icon(Icons.ad_units),
             ),
             title: Text(
-              this.itemList[index].nama,
+              this.itemKopsisList[index].namaKopsis,
               style: textStyle,
             ),
             subtitle: Text(
-              "Nama Barang : " + this.itemList[index].namaBarang+ "\n" +
-              "Stok        : " + this.itemList[index].stok.toString()),
+              "Tanggal : " + this.itemKopsisList[index].tanggal.toString()),
             trailing: GestureDetector(
               child: Icon(Icons.delete),
               onTap: () async {
 //TODO 3 Panggil Fungsi untuk Delete dari DB berdasarkan Item
-              dbHelper.delete(this.itemList[index].id);
+              dbHelperKopsis.delete(this.itemKopsisList[index].id);
               updateListView();
               },
             ),
             onTap: () async {
-              var item =
-                  await navigateToEntryForm(context, this.itemList[index]);
+              var itemKopsis =
+                  await navigateToEntryForm(context, this.itemKopsisList[index]);
 //TODO 4 Panggil Fungsi untuk Edit data
-              dbHelper.update(item);
+              int result = await 
+              dbHelperKopsis.update(itemKopsis);
               updateListView();
             },
           ),
@@ -102,14 +104,14 @@ class HomeState extends State<Home> {
 
 //update List item
   void updateListView() {
-    final Future<Database> dbFuture = dbHelper.initDb();
+    final Future<Database> dbFuture = dbHelperKopsis.initDb();
     dbFuture.then((database) {
 //TODO 1 Select data dari DB
-      Future<List<Item>> itemListFuture = dbHelper.getItemList();
-      itemListFuture.then((itemList) {
+      Future<List<ItemKopsis>> itemKopsisListFuture = dbHelperKopsis.getItemKopsisList();
+      itemKopsisListFuture.then((itemKopsisList) {
         setState(() {
-          this.itemList = itemList;
-          this.count = itemList.length;
+          this.itemKopsisList = itemKopsisList;
+          this.count = itemKopsisList.length;
         });
       });
     });

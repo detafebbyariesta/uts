@@ -1,20 +1,19 @@
-//kode utama Aplikasi tampilan awal
 import 'package:flutter/material.dart';
-import 'package:uts/DrawerNav.dart';//package letak folder Anda
+import 'package:uts/model/homeKopsis.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(App());
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title : 'UTS PEMROGRAMAN MOBILE',
+      title: 'Tambah Data',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-   
-   home : DrawerNav(),
+      home: HomeKopsis(),
     );
   }
 }

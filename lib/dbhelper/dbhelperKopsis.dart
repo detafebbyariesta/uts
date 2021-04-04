@@ -2,23 +2,23 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import '../model/item.dart';
+import '../model/itemKopsis.dart';
 
-class DbHelper {
-  static DbHelper _dbHelper;
+class DbHelperKopsis {
+  static DbHelperKopsis _dbHelperKopsis;
   static Database _database;
-  DbHelper._createObject();
+  DbHelperKopsis._createObject();
   Future<Database> initDb() async {
 //untuk menentukan nama database dan lokasi yg dibuat
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'item.db';
+    String path = directory.path + 'itemKopsis.db';
 //create, read databases
-    var itemDatabase = openDatabase(path,
+    var itemKopsisDatabase = openDatabase(path,
         version: 8,
         onCreate: _createDb,
         onUpgrade:
             _onUpgrade); //mengembalikan nilai object sebagai hasil dari fungsinya
-    return itemDatabase;
+    return itemKopsisDatabase;
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -31,13 +31,10 @@ class DbHelper {
     await batch.execute('DROP TABLE IF EXISTS item');
     await batch.execute('''
     
-    CREATE TABLE item (
+    CREATE TABLE itemKopsis (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nama TEXT,
-    namaBarang TEXT,
-    price INTEGER,
-    stok INTEGER,
-    kodeBarang INTEGER
+    namaKopsis TEXT,
+    tanggal TEXT
     )
     ''');
     await batch.commit();
@@ -46,46 +43,46 @@ class DbHelper {
 //select databases
   Future<List<Map<String, dynamic>>> select() async {
     Database db = await this.initDb();
-    var mapList = await db.query('item', orderBy: 'namaBarang');
+    var mapList = await db.query('itemKopsis', orderBy: 'namaKopsis');
     return mapList;
   }
 
 //create databases
-  Future<int> insert(Item object) async {
+  Future<int> insert(ItemKopsis object) async {
     Database db = await this.initDb();
-    int count = await db.insert('item', object.toMap());
+    int count = await db.insert('itemKopsis', object.toMap());
     return count;
   }
 
 //update databases
-  Future<int> update(Item object) async {
+  Future<int> update(ItemKopsis object) async {
     Database db = await this.initDb();
-    int count = await db.update('item', object.toMap(), where: 'id=?', whereArgs: [object.id]);
+    int count = await db.update('itemKopsis', object.toMap(), where: 'id=?', whereArgs: [object.id]);
     return count;
   }
 
   //delete databases
   Future<int> delete(int id) async {
     Database db = await this.initDb();
-    int count = await db.delete('item', where: 'id=?', whereArgs: [id]);
+    int count = await db.delete('itemKopsis', where: 'id=?', whereArgs: [id]);
     return count;
   }
 
-  Future<List<Item>> getItemList() async {
+  Future<List<ItemKopsis>> getItemList() async {
     var itemMapList = await select();
     int count = itemMapList.length;
-    List<Item> itemList = List<Item>();
+    List<ItemKopsis> itemList = List<ItemKopsis>();
     for (int i = 0; i < count; i++) {
-      itemList.add(Item.fromMap(itemMapList[i]));
+      itemList.add(ItemKopsis.fromMap(itemMapList[i]));
     }
     return itemList;
   }
 
-  factory DbHelper() {
-    if (_dbHelper == null) {
-      _dbHelper = DbHelper._createObject();
+  factory DbHelperKopsis() {
+    if (_dbHelperKopsis == null) {
+      _dbHelperKopsis = DbHelperKopsis._createObject();
     }
-    return _dbHelper;
+    return _dbHelperKopsis;
   }
   Future<Database> get database async {
     if (_database == null) {
@@ -93,4 +90,6 @@ class DbHelper {
     }
     return _database;
   }
+
+  Future<List<ItemKopsis>> getItemKopsisList() {}
 }
