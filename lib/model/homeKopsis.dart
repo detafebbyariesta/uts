@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:uts/model/entryformKopsis.dart';
-import 'package:uts/dbhelper/dbhelperKopsis.dart';
+import 'package:uts/dbhelper/dbhelper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
-import '../model/itemKopsis.dart'; //pendukung program asinkron
+import '../model/itemKopsis.dart';
+ //pendukung program asinkron
 
 class HomeKopsis extends StatefulWidget {
   @override
@@ -11,9 +12,10 @@ class HomeKopsis extends StatefulWidget {
 }
 
 class HomeKopsisState extends State<HomeKopsis> {
-  DbHelperKopsis dbHelperKopsis = DbHelperKopsis();
+  DbHelper dbHelper = DbHelper();
   int count = 0;
   List<ItemKopsis> itemKopsisList;
+
   @override
   Widget build(BuildContext context) {
     updateListView();
@@ -40,7 +42,7 @@ class HomeKopsisState extends State<HomeKopsis> {
                 var itemKopsis = await navigateToEntryForm(context, null);
                 if (itemKopsis != null) {
 //TODO 2 Panggil Fungsi untuk Insert ke DB
-                  int result = await dbHelperKopsis.insert(itemKopsis);
+                  int result = await dbHelper.insertKopsis(itemKopsis);
                   if (result > 0) {
                     updateListView();
                   }
@@ -84,7 +86,7 @@ class HomeKopsisState extends State<HomeKopsis> {
               child: Icon(Icons.delete),
               onTap: () async {
 //TODO 3 Panggil Fungsi untuk Delete dari DB berdasarkan Item
-              dbHelperKopsis.delete(this.itemKopsisList[index].id);
+              dbHelper.deleteKopsis(this.itemKopsisList[index].id);
               updateListView();
               },
             ),
@@ -93,7 +95,7 @@ class HomeKopsisState extends State<HomeKopsis> {
                   await navigateToEntryForm(context, this.itemKopsisList[index]);
 //TODO 4 Panggil Fungsi untuk Edit data
               int result = await 
-              dbHelperKopsis.update(itemKopsis);
+              dbHelper.updateKopsis(itemKopsis);
               updateListView();
             },
           ),
@@ -104,10 +106,10 @@ class HomeKopsisState extends State<HomeKopsis> {
 
 //update List item
   void updateListView() {
-    final Future<Database> dbFuture = dbHelperKopsis.initDb();
+    final Future<Database> dbFuture = dbHelper.initDb();
     dbFuture.then((database) {
 //TODO 1 Select data dari DB
-      Future<List<ItemKopsis>> itemKopsisListFuture = dbHelperKopsis.getItemKopsisList();
+      Future<List<ItemKopsis>> itemKopsisListFuture = dbHelper.getItemKopsisList();
       itemKopsisListFuture.then((itemKopsisList) {
         setState(() {
           this.itemKopsisList = itemKopsisList;
